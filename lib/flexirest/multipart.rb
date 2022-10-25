@@ -57,7 +57,9 @@ module Flexirest
       end
 
       def to_multipart
-        return "Content-Disposition: application/json; name=\"#{k}\"\r\n\r\n#{v}\r\n"
+        # return "Content-Disposition: form-data; name=\"#{k}\"\r\n\r\n#{v}\r\n"
+        return "Content-Disposition: form-data; name=\"#{k}\"\r\n" +
+               "Content-Type: application/json\r\n\r\n#{v}\r\n"
       end
     end
 

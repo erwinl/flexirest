@@ -50,7 +50,7 @@ module Flexirest
 
     private
 
-    def is_json?(value)
+    def self.is_json?(value)
       result = JSON.parse(value)
       result.is_a?(Hash) || result.is_a?(Array)
     rescue JSON::ParserError, TypeError

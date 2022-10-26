@@ -39,7 +39,7 @@ module Flexirest
           end
         elsif value.respond_to?(:path) and value.respond_to?(:read) then
           fp.push(FileParam.new(key, value.path, value.read))
-        elsif is_json?(value)
+        elsif MyJSON.valid?(value)
           fp.push(JsonParam.new(key, value))
         else
           fp.push(StringParam.new(key, value))
@@ -50,11 +50,13 @@ module Flexirest
 
     private
 
-    def self.is_json?(value)
-      result = JSON.parse(value)
-      result.is_a?(Hash) || result.is_a?(Array)
-    rescue JSON::ParserError, TypeError
-      false
+    class MyJSON
+      def self.valid?(value)
+        result = JSON.parse(value)
+        result.is_a?(Hash) || result.is_a?(Array)
+      rescue JSON::ParserError, TypeError
+        false
+      end
     end
 
     class JsonParam

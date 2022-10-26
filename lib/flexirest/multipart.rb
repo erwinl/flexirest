@@ -39,6 +39,8 @@ module Flexirest
           end
         elsif value.respond_to?(:path) and value.respond_to?(:read) then
           fp.push(FileParam.new(key, value.path, value.read))
+        elsif is_json?(value)
+          fp.push(JsonParam.new(key, value))
         else
           fp.push(StringParam.new(key, value))
         end
@@ -47,6 +49,27 @@ module Flexirest
     end
 
     private
+
+    def is_json?(value)
+      result = JSON.parse(value)
+      result.is_a?(Hash) || result.is_a?(Array)
+    rescue JSON::ParserError, TypeError
+      false
+    end
+
+    class JsonParam
+      attr_accessor :k, :v
+
+      def initialize(k, v)
+        @k = k
+        @v = v
+      end
+
+      def to_multipart
+        return "Content-Disposition: form-data; name=\"#{k}\"\r\n" +
+               "Content-Type: application/json\r\n\r\n#{v}\r\n"
+      end
+    end
 
     class StringParam
       attr_accessor :k, :v
@@ -57,9 +80,7 @@ module Flexirest
       end
 
       def to_multipart
-        # return "Content-Disposition: form-data; name=\"#{k}\"\r\n\r\n#{v}\r\n"
-        return "Content-Disposition: form-data; name=\"#{k}\"\r\n" +
-               "Content-Type: application/json\r\n\r\n#{v}\r\n"
+        return "Content-Disposition: form-data; name=\"#{k}\"\r\n\r\n#{v}\r\n"
       end
     end
 

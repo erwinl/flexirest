@@ -38,7 +38,9 @@ module Flexirest
             append_parameter(fp, "#{key}[#{k}]", i)
           end
         elsif value.respond_to?(:path) and value.respond_to?(:read) then
-          fp.push(FileParam.new(key, value.path, value.read))
+          filename = value.path.split("/").last
+          d_key = key.end_with?("[]") ? key.gsub("[]", "") : key
+          fp.push(FileParam.new(d_key, filename, value.read))
         elsif MyJSON.valid?(value)
           fp.push(JsonParam.new(key, value))
         else
